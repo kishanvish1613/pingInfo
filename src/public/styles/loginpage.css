@@ -1,0 +1,111 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+html,body {
+    width: 100%;
+    height: 100%;
+    background-color: black;
+}
+
+.contrainer {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    /* background-image: url('/images/hrms.webp'); */
+}
+
+.mini-container {
+    width: 30%;
+    height: max-content;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.566);
+    border-radius: 7px;
+    border: 1.5px solid rgb(190, 190, 96);
+}
+
+.logo-img-section {
+    width: 90%;
+    height: 10vh;
+}
+
+.logo-img {
+    width: 100%;
+    height: 10vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    object-fit: cover;
+}
+
+.logo-img img {
+    width: 73%;
+}
+
+.form-container {
+    width: 90%;
+    height: 25vh;
+}
+
+#user-name input {
+    width: 96.5%;
+    height: 5vh;
+    margin: 5px;
+    padding-left: 10px;
+}
+
+#user-email input {
+    width: 96.5%;
+    height: 5vh;
+    margin: 5px;
+    padding-left: 10px;
+}
+
+#password-input-box input {
+    width: 96.5%;
+    height: 5vh;
+    margin: 5px;
+    padding-left: 10px;
+}
+
+.user-role-container select{
+    width: 96.5%;
+    height: 5vh;
+    margin: 5px;
+    padding-left: 10px;
+}
+
+#submit-btn input {
+    width: 96.5%;
+    height: 5vh;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.message {
+    color: white;
+    margin: 7px;
+}
+
+.login-page-url {
+    width: 87%;
+    height: 5vh;
+    border-radius: 5px;
+}
+
+#loginbtn input{
+    width: 100%;
+    height: 5vh;
+    cursor: pointer;
+}

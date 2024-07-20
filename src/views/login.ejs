@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/loginpage.css">
+    <title>Login-Page</title>
+</head>
+<body>
+    <div class="contrainer">
+        <div class="mini-container">
+            <div class="logo-img-section">
+                <div class="logo-img">
+                    <img src="/img/technotask_logo_white.png" alt="" srcset="">
+                </div>
+            </div>
+            <div class="form-container">
+                <form action="/api/v1/login" method="post">
+                    <div id="user-name">
+                        <input type="text" name="userId" placeholder="Enter your User Id">
+                    </div>
+                    <div id="password-input-box">
+                        <input type="password" name="password" placeholder="Enter your password">
+                    </div>
+                    <div id="submit-btn">
+                        <input type="submit" value="LogIn">
+                    </div>
+                </form>
+            </div>
+            <% if (typeof message !== 'undefined') { %>
+                <div class="message <%= success ? 'success' : 'error' %>">
+                    <%= message %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

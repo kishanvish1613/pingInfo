@@ -1,0 +1,60 @@
+const express = require('express');
+const { create, login, logout } = require('../controllers/user-controller');
+const { pingCreate, findAllPing, startPingMonitoring, stopPingMonitoring, deleteHost } = require('../controllers/ping-controller');
+const { authenticate } = require('../middlewares/authentication');
+const { createMail, findAllEmail, deleteEmail } = require('../controllers/mail-controller');
+const { readLogFiles, showAllFolderInsideLogs, showFolderContents, readFileContents } = require('../controllers/read-logs-controller');
+
+const router = express.Router();
+const path = require('path');
+
+// Login page
+router.get('/login', (req, res) => {
+    res.render('login');
+});
+
+// User routes
+router.post('/create', create);
+router.post('/login', login);
+router.post('/logout', logout);
+
+router.get('/dashboard', findAllPing, findAllEmail, authenticate, (req, res) => {
+    const successMessage = req.flash('success');
+    const errorMessage = req.flash('error');
+    const data = req.flash('data');
+    const { pingData, hosts, emails } = req;
+
+    res.render('dashboard', {
+        message: successMessage.length ? successMessage[0] : errorMessage.length ? errorMessage[0] : null,
+        data: data.length ? data[0] : null,
+        pingData,
+        hosts,
+        emails
+    });
+});
+
+router.get('/graph', (req, res) => {
+    const logDir = path.join(__dirname, '..', '..', 'logs');
+    const pingTimes = readLogFiles(logDir);
+    res.render('graph', { pingTimes });
+});
+
+// Ping routes
+router.post('/pingCreate', authenticate, pingCreate);
+router.get('/listOfHost', authenticate, findAllPing);
+
+router.post('/startPing', authenticate, startPingMonitoring);
+router.post('/stopMonitoring', authenticate, stopPingMonitoring);
+router.post('/deletehost', deleteHost);
+
+// Add mail to DB
+router.post('/addemail', createMail);
+router.post('/deleteemail', deleteEmail);
+
+// Profile
+router.get('/logsFiles', authenticate, showAllFolderInsideLogs, (req, res) => {
+    res.render('logs-file');
+});
+
+module.exports = router;
+
