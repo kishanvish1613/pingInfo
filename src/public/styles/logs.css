@@ -1,136 +1,173 @@
-* {
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
 }
 
-html, body {
-    width: 100%;
-    height: 100%;
-}
-
-.container {
-    width: 100%;
-    height: 100vh;
-}
-
-.nav-bar-section {
-    width: 100%;
-    height: 8vh;
+/* Navbar Section */
+header.nav-bar-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: white;
-    background-color: #2d5f8b;
-}
-
-.techno-logo-img-section {
-    width: 20%;
-    height: 7vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    user-select: none;
+    background-color: #4a90e2;
+    padding: 10px 20px;
+    color: #fff;
 }
 
 .techno-logo-img-section img {
-    width: 70%;
+    width: 150px;
 }
 
 .nav-right-user-profile-info-with-logout-btn-section {
-    width: 35%;
-    height: 7vh;
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 10px;
 }
 
-.logs-file-display-section {
-    width: 15%;
-    height: 3vh;
+.user-id-details-section p {
+    margin-right: 20px;
+    font-weight: bold;
 }
 
-.logs-file-display-section input {
-    width: 100%;
-    height: 3vh;
-    color: white;
-    border: 1px solid white;
-    border-radius: 7px;
+.nav-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.nav-button-form {
+    margin-right: 10px;
+}
+
+.nav-button-form input[type="submit"] {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
     cursor: pointer;
-    background-color: transparent;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-.dark-and-white-theme-section {
-    width: 15%;
-    height: 3vh;
+.nav-button-form input[type="submit"]:hover {
+    background-color: #218838;
 }
 
-.dark-and-white-theme-section button {
-    width: 100%;
-    height: 3vh;
-    color: white;
-    border: 1px solid white;
-    border-radius: 7px;
+/* Folder list styles */
+.show-folder {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.folder-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.folder-item {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px;
+    width: calc(33.333% - 20px);
+    box-sizing: border-box;
+    justify-content: space-between; /* Adjust to ensure icons are on opposite ends */
+}
+
+.folder-icon {
+    font-size: 24px;
+    margin-right: 10px;
+    color: #007bff;
+}
+
+.file-icon-with-open-file-btn {
+    font-size: 40px;
+    margin-left: auto;
+    color: gray;
+}
+
+.folder-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .folder-item {
+        width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 480px) {
+    .folder-item {
+        width: calc(100% - 20px);
+    }
+}
+
+ul {
+    list-style: none;
+}
+
+.file-icon {
+    font-size: 40px;
     cursor: pointer;
-    background-color: transparent;
+    color: gray;
 }
 
-.logout-btn-section {
-    width: 15%;
-    height: 3vh;
+/* Modal styles */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
-.logout-btn-section input {
-    width: 100%;
-    height: 3vh;
-    color: white;
-    border: 1px solid white;
-    border-radius: 7px;
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%; /* Could be more or less, depending on screen size */
+    position: relative;
+    border-radius: 5px;
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
     cursor: pointer;
-    background-color: transparent;
 }
 
-.hero-section {
-    width: 100%;
-    height: 92vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    border: 1px solid black;
-}
-
-.logs-folder-file-and-search-option-section {
-    width: 100%;
-    height: 7vh;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-}
-
-.log-file-heading {
-    width: 15%;
-    height: 6vh;
-    display: flex;
-    align-items: center;
-}
-
-.search-bar-main-section {
-    width: 80%;
-    height: 6vh;
-    border: 1px solid rgb(255, 0, 0);
-}
-
-.list-down-all-logs-folders-main-section {
-    width: 97%;
-    height: 85vh;
-    background-color: #2d5f8b;
-}
-
-.box {
-    width: 15%;
-    height: 15vh;
-    border: 1px solid red;
+#file-content {
+    white-space: pre-wrap; /* Preserve whitespace */
+    background-color: #f4f4f9;
+    padding: 10px;
+    border-radius: 5px;
+    max-height: 500px;
+    overflow-y: auto;
 }

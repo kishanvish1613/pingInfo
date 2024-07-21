@@ -49,7 +49,7 @@ const startPingMonitoring = async (req, res) => {
 
         // Start monitoring with the emailRecipients
         const currentDateTime = new Date();
-        const folderName = `${host}_${currentDateTime.getFullYear()}-${currentDateTime.getMonth() + 1}-${currentDateTime.getDate()}`;
+        const folderName = `${host}__${currentDateTime.getFullYear()}-${currentDateTime.getMonth() + 1}-${currentDateTime.getDate()}`;
         const folderPath = path.join(__dirname, '..', '..', 'logs', folderName);
 
         fs.mkdirSync(folderPath, { recursive: true });

@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 // Function to read and parse log files from all subdirectories
 function readLogFiles(logDir) {
@@ -8,8 +8,7 @@ function readLogFiles(logDir) {
   // Recursively read log files from subdirectories
   function readLogsFromDirectory(directory) {
     const items = fs.readdirSync(directory);
-
-    items.forEach(item => {
+    items.forEach((item) => {
       const itemPath = path.join(directory, item);
       const stat = fs.statSync(itemPath);
 
@@ -18,10 +17,10 @@ function readLogFiles(logDir) {
         readLogsFromDirectory(itemPath);
       } else if (stat.isFile()) {
         // If item is a file, read its content
-        const data = fs.readFileSync(itemPath, 'utf-8');
-        const lines = data.split('\n');
+        const data = fs.readFileSync(itemPath, "utf-8");
+        const lines = data.split("\n");
 
-        lines.forEach(line => {
+        lines.forEach((line) => {
           const hostMatch = line.match(/Host: ([^ ]+)/);
           const timeMatch = line.match(/Time: (\d+)ms/);
           const unreachableMatch = line.match(/Unreachable/);
@@ -45,59 +44,49 @@ function readLogFiles(logDir) {
   return pingData;
 }
 
-
 const showAllFolderInsideLogs = (req, res) => {
-    const logsDir = path.join(__dirname, '../../logs');
+  const logsDir = path.join(__dirname, "../../logs");
+  const userId = req.user.userId;
 
-    fs.readdir(logsDir, { withFileTypes: true }, (err, files) => {
-        if (err) {
-            console.error('Error reading logs directory:', err);
-            return res.status(500).send('Server error');
-        }
+  fs.readdir(logsDir, { withFileTypes: true }, (err, files) => {
+    if (err) {
+      console.error("Error reading logs directory:", err);
+      return res.status(500).send("Server error");
+    }
 
-        const folders = files
-            .filter(file => file.isDirectory())
-            .map(dir => dir.name);
+    const folders = files
+      .filter((file) => file.isDirectory())
+      .map((dir) => dir.name);
 
-        res.render('logs-file', { folders, parentDir: '' });
+    const folderContents = {};
+
+    // Read each folder's contents
+    folders.forEach((folder) => {
+      const folderPath = path.join(logsDir, folder);
+      folderContents[folder] = fs.readdirSync(folderPath);
     });
-};
 
-const showFolderContents = (req, res) => {
-    const folderPath = path.join(__dirname, '../../logs', req.params.folder);
-
-    fs.readdir(folderPath, { withFileTypes: true }, (err, files) => {
-        if (err) {
-            console.error('Error reading folder:', err);
-            return res.status(500).send('Server error');
-        }
-
-        const contents = files.map(file => ({
-            name: file.name,
-            isDirectory: file.isDirectory()
-        }));
-
-        res.render('folder-contents', { contents, parentDir: req.params.folder });
-    });
+    res.render("logs-file", { folders, folderContents, userId, parentDir: "" });
+  });
 };
 
 const readFileContents = (req, res) => {
-    const filePath = path.join(__dirname, '../../logs', req.params.folder, req.params.file);
+  const { folder, file } = req.query;
+  const filePath = path.join(__dirname, "../../logs", folder, file);
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error('Error reading file:', err);
-            return res.status(500).send('Server error');
-        }
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error("Error reading file:", err);
+      return res.status(500).send("Server error");
+    }
 
-        res.render('file-contents', { fileName: req.params.file, fileContents: data, parentDir: req.params.folder });
-    });
+    res.send(data);
+  });
 };
 
 
 module.exports = {
-    readLogFiles,
-    showAllFolderInsideLogs,
-    showFolderContents,
-    readFileContents
+  readLogFiles,
+  showAllFolderInsideLogs,
+  readFileContents,
 };

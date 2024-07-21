@@ -1,159 +1,132 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/styles/dashcss.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
     <title>Dashboard</title>
+    <script>
+        (function() {
+            const mode = localStorage.getItem('mode');
+            if (mode === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="/styles/dashcss.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
 </head>
 <body>
     <div class="container">
-        <div class="nav-bar-section">
+        <!-- Navbar Section -->
+        <header class="nav-bar-section">
             <div class="techno-logo-img-section">
-                <img src="/img/technotask_logo_white.png" alt="" srcset="">
+                <img src="/img/technotask_logo_white.png" alt="TechnoTask Logo">
             </div>
-            <div class="nav-right-user-profile-info-with-logout-btn-section">
+            <nav class="nav-right-user-profile-info-with-logout-btn-section">
                 <div class="user-id-details-section">
-                    <p>Welcome, userId |</p>
+                    <p>Welcome, <%= userId %> |</p>
                 </div>
-                <div class="logs-file-display-section">
-                    <form action="/api/v1/logsFiles" method="get">
-                        <input type="submit" value="See logs">
+                <div class="nav-buttons">
+                    <form action="/api/v1/logsFiles" method="get" class="nav-button-form">
+                        <input type="submit" value="See Logs">
                     </form>
-                </div>
-                <div class="dark-and-white-theme-section">
-                    <button id="toggleMode">Toggle</button>
-                </div>
-                <div class="logout-btn-section">
-                    <form action="/api/v1/logout" method="post">
+                    <button id="toggleMode" class="toggle-mode-btn">🌙</button>
+                    <form action="/api/v1/logout" method="post" class="nav-button-form">
                         <input type="submit" value="Log Out">
                     </form>
                 </div>
-            </div>
-        </div>
-        <div class="hero-section">
-            <div class="create-host-section">
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main class="hero-section">
+            <!-- Create Host Section -->
+            <section class="create-host-section">
                 <div class="create-mini-host-section">
                     <form action="/api/v1/pingCreate" method="post">
                         <div class="create-mini-host-section-inside-form">
-                            <div class="create-host-heading-section">
-                                <p>Create New Host :</p>
-                            </div>
-                            <div class="create-input-box-section">
-                                <input type="text" name="host" placeholder="Enter hosts" required>
-                            </div>
-                            <div class="create-input-box-section">
-                                <input type="text" name="description" placeholder="Enter description" required>
-                            </div>
-                            <div class="create-host-submit-btn-section">
-                                <input type="submit" value="Add">
-                            </div>
+                            <h2>Create New Host</h2>
+                            <input type="text" name="host" placeholder="Enter host" required>
+                            <input type="text" name="description" placeholder="Enter description" required>
+                            <input type="submit" value="Add Host">
                         </div>
                     </form>
                 </div>
-            </div>
-            <div class="list-all-host-with-start-stop-btn-section">
-                <div class="host-list-show-box-section-with-red-green-btn-left-section">
-                    <div class="host-heading">
-                        <p>List all host</p>
-                    </div>
-                    <div class="list-down-all-host-mini-section">
-                        <% if (hosts && hosts.length > 0) { %>
-                            <ul>
-                                <% hosts.forEach(host => { %>
-                                    <div class="host-div-with-btn">
-                                        <li>
-                                            <div class="display-host-decs-flex-div-section">
-                                                <div class="green-red-light-section">
-                                                    <div class="circle-red-green"></div>
-                                                </div>
-                                                <div class="host-name-and-desc-display">
-                                                    <p>Host: <%= host.host %> - Description: <%= host.description %></p>
-                                                </div>
-                                                <div class="ping-start-stop-btn-section">
-                                                    <div class="ping-start-btn-section">
-                                                        <form action="/api/v1/startPing" method="post">
-                                                            <input type="hidden" name="host" value="<%= host.host %>">
-                                                            <input type="submit" value="Start Monitoring">
-                                                        </form>
-                                                    </div>
-                                                    <div class="ping-stop-btn-section">
-                                                        <form action="/api/v1/stopMonitoring" method="post">
-                                                            <input type="hidden" name="host" value="<%= host.host %>">
-                                                            <input type="submit" value="Stop Monitoring">
-                                                        </form> 
-                                                    </div>
-                                                </div>
-                                                <div class="delete-host-section">
-                                                    <form action="/api/v1/deletehost" method="post">
-                                                        <input type="hidden" name="host" value="<%= host.host %>">
-                                                        <input type="submit" value="Delete Host">
-                                                    </form>
-                                                </div>
-                                            </div>                               
-                                        </li>
-                                    </div>
-                                <% }) %>
-                            </ul>
-                        <% } else { %>
-                            <p>No hosts available.</p>
-                        <% } %>
-                    </div>
-                </div>
-                <div class="display-email-info-and-create-right-section">
-                    <div class="email-heading">
-                        <p>List all Email</p>
-                    </div>
-                    <div class="add-email-section">
-                        <div class="add-email-add-btn-section-flex">
-                            <form action="/api/v1/addemail" method="post">
-                                <div class="mini-actual-create-section">
-                                    <div class="add-email-box">
-                                        <input type="email" name="mailId" placeholder="Enter Email to add" required>
-                                    </div>
-                                    <div class="create-host-submit-btn-section">
-                                        <input type="submit" value="Add">
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="list-all-email-of-admins">
-                        <div class="email-id-flex-section">
-                            <% if (emails && emails.length > 0) { %>
-                                <ul>
-                                    <% emails.forEach(email => { %>
-                                        <div class="email-id-section">
-                                            <div class="flex-email-id-and-delete-section">
-                                                <div class="email-text-id-section">
-                                                    <li><%= email.mailId %></li>
-                                                </div>
-                                                <div class="delete-email-section">
-                                                    <form action="/api/v1/deleteemail" method="post">
-                                                        <input type="hidden" name="mailId" value="<%= email.mailId %>">
-                                                        <input type="submit" value="Delete">
-                                                    </form>
-                                                </div>
-                                            </div>
+            </section>
+
+            <!-- Host List Section -->
+            <section class="list-all-host-with-start-stop-btn-section">
+                <h2>List All Hosts</h2>
+                <div class="host-list-show-box-section">
+                    <% if (hosts && hosts.length > 0) { %>
+                        <ul class="host-list">
+                            <% hosts.forEach(host => { %>
+                                <li class="host-item">
+                                    <div class="host-info">
+                                        <div class="status-indicator <%= host.status === 'active' ? 'active' : 'inactive' %>"></div>
+                                        <div class="host-details">
+                                            <p>Host: <%= host.host %> - Description: <%= host.description %></p>
                                         </div>
-                                    <% }) %>
-                                </ul>
-                            <% } else { %>
-                                    <p>No emails available.</p>
-                            <% } %>
-                        </div>
-                    </div>
+                                    </div>
+                                    <div class="host-actions">
+                                        <form action="/api/v1/startPing" method="post">
+                                            <input type="hidden" name="host" value="<%= host.host %>">
+                                            <button type="submit" class="action-btn start-btn">Start</button>
+                                        </form>
+                                        <form action="/api/v1/stopMonitoring" method="post">
+                                            <input type="hidden" name="host" value="<%= host.host %>">
+                                            <button type="submit" class="action-btn stop-btn">Stop</button>
+                                        </form>
+                                        <form action="/api/v1/deletehost" method="post">
+                                            <input type="hidden" name="host" value="<%= host.host %>">
+                                            <button type="submit" class="action-btn delete-btn">Delete</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            <% }) %>
+                        </ul>
+                    <% } else { %>
+                        <p>No hosts available.</p>
+                    <% } %>
                 </div>
-            </div>
+            </section>
+
+            <!-- Email Section -->
+            <section class="display-email-info-and-create-right-section">
+                <h2>Manage Emails</h2>
+                <form action="/api/v1/addemail" method="post" class="add-email-form">
+                    <input type="email" name="mailId" placeholder="Enter email to add" required>
+                    <button type="submit" class="action-btn add-email-btn">Add Email</button>
+                </form>
+                <div class="list-all-email-of-admins">
+                    <% if (emails && emails.length > 0) { %>
+                        <ul class="email-list">
+                            <% emails.forEach(email => { %>
+                                <li class="email-item">
+                                    <div class="email-info">
+                                        <p><%= email.mailId %></p>
+                                        <form action="/api/v1/deleteemail" method="post" class="delete-email-form">
+                                            <input type="hidden" name="mailId" value="<%= email.mailId %>">
+                                            <button type="submit" class="action-btn delete-email-btn">Delete</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            <% }) %>
+                        </ul>
+                    <% } else { %>
+                        <p>No emails available.</p>
+                    <% } %>
+                </div>
+            </section>
+
+            <!-- Quick Message Info Section -->
             <div class="quick-msg-info-section" id="quick-msg-info-section">
                 <% if (message) { %>
                     <div class="alert alert-info"><%= message %></div>
-                    <button class="close-btn" onclick="hideMessageBox()"><p>X</p></button>
+                    <button class="close-btn" onclick="hideMessageBox()">X</button>
                 <% } %>
             </div>
-        </div>
+        </main>
     </div>
 
     <script>
@@ -169,19 +142,24 @@
                     messageBox.style.display = 'none';
                 }, 5000);
             }
+
+            // Apply the stored mode from localStorage
+            const mode = localStorage.getItem('mode');
+            if (mode === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('toggleMode').textContent = '🌞';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('toggleMode').textContent = '🌙';
+            }
         };
 
-        function toggleMode(){
-            if (b) {
-                
-            } else {
-                
-            }
-            const toggleBtn = document.getElementById('toggleMode');
-            console.log(toggleBtn);
-        }
-
-        toggleMode();
+        document.getElementById('toggleMode').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            this.textContent = isDarkMode ? '🌞' : '🌙';
+            localStorage.setItem('mode', isDarkMode ? 'dark' : 'light');
+        });
     </script>
 </body>
 </html>
