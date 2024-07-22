@@ -69,20 +69,20 @@
                                         </div>
                                     </div>
                                     <div class="host-actions">
-                                        <form action="/api/v1/startPing" method="post">
+                                        <form action="/api/v1/startPing" method="POST">
                                             <input type="hidden" name="host" value="<%= host.host %>">
-                                            <button type="submit" class="action-btn start-btn">Start</button>
+                                            <button type="submit" class="action-btn start-btn">Start Monitoring</button>
                                         </form>
-                                        <form action="/api/v1/stopMonitoring" method="post">
+                                        <form action="/api/v1/stopMonitoring" method="POST">
                                             <input type="hidden" name="host" value="<%= host.host %>">
-                                            <button type="submit" class="action-btn stop-btn">Stop</button>
+                                            <button type="submit" class="action-btn stop-btn">Stop Monitoring</button>
                                         </form>
                                         <form action="/api/v1/deletehost" method="post">
                                             <input type="hidden" name="host" value="<%= host.host %>">
                                             <button type="submit" class="action-btn delete-btn">Delete</button>
                                         </form>
                                     </div>
-                                </li>
+                                </li>                                
                             <% }) %>
                         </ul>
                     <% } else { %>

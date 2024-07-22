@@ -39,7 +39,7 @@ app.use(flash());
 
 app.use('/api/v1', routes);
 
-app.listen(PORT, () => {
+app.listen(PORT,() => {
     console.log(`server started at ${PORT}`);
     connect();
     console.log(`db connecated successfully`);
