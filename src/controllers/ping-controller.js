@@ -9,6 +9,8 @@ const {readLogFiles} = require('../controllers/read-logs-controller')
 const { EMAIL_ID, EMAIL_PASS } = require('../config/serverConfig');
 const { findAllEmail } = require('../controllers/mail-controller');
 
+
+
 let intervalIds = {};
 
 const pingCreate = async (req, res) => {
@@ -134,7 +136,7 @@ const sendFailureEmail = (host, emailRecipients) => {
         from: EMAIL_ID,
         to: emailRecipients.join(','), // Use the array of email recipients
         subject: `Host ${host} is unreachable`,
-        text: `The host ${host} has been unreachable for 10 consecutive times. Please check the server.`
+        text: `The host ${host} has been unreachable for 10 consecutive times at site-4 Itpark. Please check the server.`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
