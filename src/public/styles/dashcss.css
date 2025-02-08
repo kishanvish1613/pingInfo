@@ -7,6 +7,11 @@ body {
     transition: none; /* Remove transition */
 }
 
+a {
+    text-decoration: none;
+    color: rgb(225, 94, 94);
+}
+
 body.dark-mode {
     background-color: #121212;
     color: #ffffff;
@@ -58,8 +63,19 @@ body.dark-mode header.nav-bar-section {
     background-color: #333;
 }
 
+.techno-logo-img-section {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    width: 20%;
+    padding-left: 20px;
+    height: 7vh;
+}
+
 .techno-logo-img-section img {
-    width: 150px;
+    width: 50px;
+    height: auto;
+    object-fit: contain;
 }
 
 .nav-right-user-profile-info-with-logout-btn-section {
@@ -300,3 +316,11 @@ body.dark-mode .close-btn {
     color: #aaa;
 }
 
+.footer {
+    width: 100%;
+    height: max-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid black;
+}
