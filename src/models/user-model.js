@@ -30,7 +30,7 @@ userSchema.methods.genJWT = function generate() {
     return jwt.sign({
         id: this._id,
         userId: this.userId
-    }, 'ttbs_secret', { expiresIn: '1h' }); // 1m 3d, 360d
+    }, 'ttbs_secret', { expiresIn: '7h' }); // 1m 3d, 360d
 };
 
 const User = mongoose.model('User', userSchema);

@@ -2,16 +2,37 @@ const cron = require('node-cron');
 const ping = require('ping');
 const nodemailer = require('nodemailer');
 const Ping = require('../models/ping-model');
+const Mail = require('../models/mail-model');
 const path = require('path');
 const fs = require('fs');
-const {readLogFiles} = require('../controllers/read-logs-controller')
-
+const { readLogFiles } = require('../controllers/read-logs-controller');
 const { EMAIL_ID, EMAIL_PASS } = require('../config/serverConfig');
-const { findAllEmail } = require('../controllers/mail-controller');
-
-
 
 let intervalIds = {};
+
+// Midnight cron job to restart all ping monitors
+cron.schedule('0 0 * * *', async () => {
+    console.log('🕛 Midnight cron job: Restarting all ping monitors for new day...');
+
+    // Stop all running ping monitors
+    for (const host in intervalIds) {
+        clearInterval(intervalIds[host]);
+        delete intervalIds[host];
+    }
+
+    // Restart all monitors from database
+    const hosts = await Ping.find({});
+    const emails = (await Mail.find({})).map(email => email.mailId);
+
+    hosts.forEach(host => {
+        startPingForHost(host.host, emails);
+    });
+
+    console.log('✅ All ping monitors restarted for the new day.');
+}, {
+    scheduled: true,
+    timezone: "Asia/Kolkata"
+});
 
 const pingCreate = async (req, res) => {
     try {
@@ -30,7 +51,7 @@ const findAllPing = async (req, res, next) => {
     try {
         const hosts = await Ping.find({});
         const logDir = path.join(__dirname, '..', '..', 'logs');
-        const pingData = readLogFiles(logDir); // Use the imported readLogFiles function
+        const pingData = readLogFiles(logDir);
         req.pingData = pingData;
         req.hosts = hosts;
         next();
@@ -41,33 +62,32 @@ const findAllPing = async (req, res, next) => {
     }
 };
 
-
 const startPingMonitoring = async (req, res) => {
     const host = req.body.host;
-    const interval = 4000; // Default interval of 4 seconds
 
-    // Check if ping monitoring is already running for the host
     if (intervalIds[host]) {
         req.flash('error', `Ping monitoring is already running for ${host}.`);
         return res.redirect('/api/v1/dashboard');
     }
 
-    await findAllEmail(req, res, async () => {
-        const emailRecipients = req.emails.map(email => email.mailId);
-
-        startPingForHost(host, emailRecipients);
-
+    try {
+        const emails = (await Mail.find({})).map(email => email.mailId);
+        startPingForHost(host, emails);
         req.flash('success', `Ping monitoring started for ${host}.`);
-        res.redirect('/api/v1/dashboard');
-    });
+    } catch (error) {
+        req.flash('error', `Failed to start monitoring: ${error.message}`);
+    }
+    res.redirect('/api/v1/dashboard');
 };
 
 const startPingForHost = (host, emailRecipients) => {
-    const currentDateTime = new Date();
-    const folderName = `${host}__${currentDateTime.getFullYear()}-${currentDateTime.getMonth() + 1}-${currentDateTime.getDate()}`;
+    const currentDate = new Date();
+    const folderName = `${host}__${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
     const folderPath = path.join(__dirname, '..', '..', 'logs', folderName);
 
-    fs.mkdirSync(folderPath, { recursive: true });
+    if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true });
+    }
 
     const filePath = path.join(folderPath, `${host}-ping.log`);
     let failureCount = 0;
@@ -82,17 +102,17 @@ const startPingForHost = (host, emailRecipients) => {
                 : `Host: ${host} - Unreachable - Date&Time: ${formattedDateTime}\n`;
 
             fs.appendFile(filePath, logMessage, (err) => {
-                if (err) throw err;
+                if (err) console.error(`Error writing to log: ${err}`);
             });
 
             if (!response.alive) {
                 failureCount++;
                 if (failureCount >= 10) {
                     sendFailureEmail(host, emailRecipients);
-                    failureCount = 0; // Reset counter after sending the email
+                    failureCount = 0;
                 }
             } else {
-                failureCount = 0; // Reset counter if host is reachable
+                failureCount = 0;
             }
 
             console.log(`Logged: ${logMessage}`);
@@ -101,9 +121,8 @@ const startPingForHost = (host, emailRecipients) => {
         }
     }, 4000);
 
-    console.log(`Ping monitoring started for ${host}.`);
-
     intervalIds[host] = intervalId;
+    console.log(`Ping monitoring started for ${host}.`);
 };
 
 const stopPingMonitoring = async (req, res) => {
@@ -111,9 +130,7 @@ const stopPingMonitoring = async (req, res) => {
     if (intervalIds[host]) {
         clearInterval(intervalIds[host]);
         delete intervalIds[host];
-
         await Ping.updateOne({ host }, { status: 'inactive' });
-
         req.flash('success', `Ping monitoring stopped for ${host}.`);
     } else {
         req.flash('error', `Ping monitoring is not running for ${host}.`);
@@ -122,7 +139,7 @@ const stopPingMonitoring = async (req, res) => {
 };
 
 const sendFailureEmail = (host, emailRecipients) => {
-    let transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
         host: 'smtppro.zoho.in',
         port: 465,
         secure: true,
@@ -132,18 +149,16 @@ const sendFailureEmail = (host, emailRecipients) => {
         }
     });
 
-    let mailOptions = {
+    const mailOptions = {
         from: EMAIL_ID,
-        to: emailRecipients.join(','), // Use the array of email recipients
+        to: emailRecipients.join(','),
         subject: `Host ${host} is unreachable`,
         text: `The host ${host} has been unreachable for 10 consecutive times at site-4 Itpark. Please check .`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log('Email sent: ' + info.response);
+        if (error) console.error('Email send error:', error);
+        else console.log('Email sent:', info.response);
     });
 };
 
@@ -153,23 +168,11 @@ const deleteHost = async (req, res) => {
         const response = await Ping.deleteOne(hostName);
         req.flash('success', 'Host record deleted');
         req.flash('data', response);
-        res.redirect('/api/v1/dashboard');
     } catch (error) {
         req.flash('error', `Error: Not able to delete a host - ${error.message}`);
-        res.redirect('/api/v1/dashboard');
     }
+    res.redirect('/api/v1/dashboard');
 };
-
-// Schedule a task to run at midnight
-// for mid night -> 0 0 * * *
-cron.schedule('0 0 * * *', async () => {
-    const hosts = await Ping.find({ status: 'active' });
-    const emailRecipients = (await findAllEmail()).map(email => email.mailId);
-
-    hosts.forEach(host => {
-        startPingForHost(host.host, emailRecipients);
-    });
-});
 
 module.exports = {
     pingCreate,
